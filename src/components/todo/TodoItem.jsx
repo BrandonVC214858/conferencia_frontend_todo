@@ -96,7 +96,7 @@ const TodoItem = ({ todo, onToggle, onDelete, onEdit }) => {
         
         {/* 📝 CONTENIDO PRINCIPAL DEL TODO - RESPONSIVO */}
         <div className="flex-grow min-w-0">
-          <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between space-y-2 sm:space-y-0">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-2 sm:space-y-0">
             <div className="flex-grow pr-0 sm:pr-4">
               {/* 🏷️ TÍTULO DEL TODO - RESPONSIVO */}
               <h3 className={`
@@ -142,19 +142,19 @@ const TodoItem = ({ todo, onToggle, onDelete, onEdit }) => {
               </div>
             </div>
             
-            {/* 🛠️ BOTONES DE ACCIÓN - RESPONSIVO */}
-            <div className="flex items-center justify-end space-x-1 mt-2 sm:mt-0 sm:ml-2">
+            {/* 🛠️ BOTONES DE ACCIÓN - RESPONSIVO Y CENTRADOS */}
+            <div className="flex items-center justify-end space-x-1 mt-2 sm:mt-0 sm:ml-4 flex-shrink-0">
               {/* ✏️ BOTÓN DE EDITAR (opcional, solo si se proporciona onEdit) - RESPONSIVO */}
               {onEdit && (
                 <Button
                   variant="ghost"
                   size="sm"
                   onClick={() => onEdit(todo)} // Pasar el objeto todo completo
-                  className="p-1 sm:p-2"
+                  className="p-2 hover:bg-gray-100"
                   title="Editar todo" // Tooltip para accesibilidad
                 >
-                  <Edit className="h-3 w-3 sm:h-4 sm:w-4" />
-                  <span className="sr-only sm:not-sr-only sm:ml-1 text-xs">Editar</span>
+                  <Edit className="h-4 w-4" />
+                  <span className="sr-only sm:not-sr-only sm:ml-1 text-xs hidden sm:inline">Editar</span>
                 </Button>
               )}
               
@@ -164,11 +164,11 @@ const TodoItem = ({ todo, onToggle, onDelete, onEdit }) => {
                 size="sm"
                 onClick={handleDelete}
                 loading={isDeleting} // Mostrar spinner durante eliminación
-                className="p-1 sm:p-2 text-red-600 hover:text-red-700 hover:bg-red-50"
+                className="p-2 text-red-600 hover:text-red-700 hover:bg-red-50"
                 title="Eliminar todo" // Tooltip para accesibilidad
               >
-                <Trash2 className="h-3 w-3 sm:h-4 sm:w-4" />
-                <span className="sr-only sm:not-sr-only sm:ml-1 text-xs">Eliminar</span>
+                <Trash2 className="h-4 w-4" />
+                <span className="sr-only sm:not-sr-only sm:ml-1 text-xs hidden sm:inline">Eliminar</span>
               </Button>
             </div>
           </div>
