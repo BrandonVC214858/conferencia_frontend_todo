@@ -74,16 +74,16 @@ const TodoItem = ({ todo, onToggle, onDelete, onEdit }) => {
 
   return (
     <div className={`
-      bg-white border border-gray-200 rounded-lg p-4 shadow-sm transition-all duration-200 hover:shadow-md
+      bg-white border border-gray-200 rounded-lg p-3 sm:p-4 shadow-sm transition-all duration-200 hover:shadow-md
       ${todo.completed ? 'opacity-75' : ''} // Reducir opacidad si está completado
     `}>
-      <div className="flex items-start space-x-3">
-        {/* ✅ CHECKBOX DE COMPLETADO */}
+      <div className="flex items-start space-x-2 sm:space-x-3">
+        {/* ✅ CHECKBOX DE COMPLETADO - RESPONSIVO */}
         <button
           onClick={handleToggle}
           disabled={isToggling} // Deshabilitar durante la carga
           className={`
-            flex-shrink-0 mt-0.5 h-5 w-5 rounded border-2 flex items-center justify-center transition-colors
+            flex-shrink-0 mt-0.5 h-4 w-4 sm:h-5 sm:w-5 rounded border-2 flex items-center justify-center transition-colors
             ${todo.completed 
               ? 'bg-green-500 border-green-500 text-white'  // Verde cuando completado
               : 'border-gray-300 hover:border-green-500 hover:bg-green-50' // Gris con hover cuando pendiente
@@ -91,79 +91,82 @@ const TodoItem = ({ todo, onToggle, onDelete, onEdit }) => {
           `}
         >
           {/* ✓ ICONO DE CHECK (solo visible cuando completado) */}
-          {todo.completed && <Check className="h-3 w-3" />}
+          {todo.completed && <Check className="h-2 w-2 sm:h-3 sm:w-3" />}
         </button>
         
-        {/* 📝 CONTENIDO PRINCIPAL DEL TODO */}
+        {/* 📝 CONTENIDO PRINCIPAL DEL TODO - RESPONSIVO */}
         <div className="flex-grow min-w-0">
-          <div className="flex items-start justify-between">
-            <div className="flex-grow">
-              {/* 🏷️ TÍTULO DEL TODO */}
+          <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between space-y-2 sm:space-y-0">
+            <div className="flex-grow pr-0 sm:pr-4">
+              {/* 🏷️ TÍTULO DEL TODO - RESPONSIVO */}
               <h3 className={`
-                text-base font-medium 
+                text-sm sm:text-base font-medium leading-tight
                 ${todo.completed ? 'line-through text-gray-500' : 'text-gray-900'} // Tachado si completado
               `}>
                 {todo.title}
               </h3>
               
-              {/* 📄 DESCRIPCIÓN DEL TODO (opcional) */}
+              {/* 📄 DESCRIPCIÓN DEL TODO (opcional) - RESPONSIVO */}
               {todo.description && (
                 <p className={`
-                  mt-1 text-sm 
+                  mt-1 text-xs sm:text-sm leading-tight
                   ${todo.completed ? 'line-through text-gray-400' : 'text-gray-600'} // Tachado si completado
                 `}>
                   {todo.description}
                 </p>
               )}
               
-              {/* 🏷️ METADATOS Y BADGES DEL TODO */}
-              <div className="flex items-center space-x-4 mt-2">
-                {/* 🎯 BADGE DE ESTADO (Completado/Pendiente) */}
+              {/* 🏷️ METADATOS Y BADGES DEL TODO - RESPONSIVO */}
+              <div className="flex flex-col sm:flex-row sm:items-center space-y-1 sm:space-y-0 sm:space-x-3 mt-2">
+                {/* 🎯 BADGE DE ESTADO (Completado/Pendiente) - RESPONSIVO */}
                 <span className={`
-                  inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium border
+                  inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium border w-fit
                   ${todo.completed 
                     ? 'bg-green-100 text-green-800 border-green-200' // Verde para completado
                     : 'bg-blue-100 text-blue-800 border-blue-200'    // Azul para pendiente
                   }
                 `}>
-                  {todo.completed ? '✅ Completado' : '⏳ Pendiente'}
+                  <span className="hidden sm:inline">{todo.completed ? '✅ Completado' : '⏳ Pendiente'}</span>
+                  <span className="sm:hidden">{todo.completed ? '✅' : '⏳'}</span>
                 </span>
                 
-                {/* 🕐 TIMESTAMP DE CREACIÓN (si está disponible) */}
+                {/* 🕐 TIMESTAMP DE CREACIÓN (si está disponible) - RESPONSIVO */}
                 {todo.createdAt && (
                   <div className="flex items-center text-xs text-gray-500">
-                    <Clock className="h-3 w-3 mr-1" />
-                    {formatRelativeDate(todo.createdAt)} {/* Ej: "hace 2 horas" */}
+                    <Clock className="h-3 w-3 mr-1 flex-shrink-0" />
+                    <span className="truncate">{formatRelativeDate(todo.createdAt)}</span>
                   </div>
                 )}
               </div>
             </div>
             
-            {/* 🛠️ BOTONES DE ACCIÓN */}
-            <div className="flex items-center space-x-1 ml-4">
-              {/* ✏️ BOTÓN DE EDITAR (opcional, solo si se proporciona onEdit) */}
+            {/* 🛠️ BOTONES DE ACCIÓN - RESPONSIVO */}
+            <div className="flex items-center justify-end space-x-1 mt-2 sm:mt-0 sm:ml-2">
+              {/* ✏️ BOTÓN DE EDITAR (opcional, solo si se proporciona onEdit) - RESPONSIVO */}
               {onEdit && (
                 <Button
                   variant="ghost"
                   size="sm"
                   onClick={() => onEdit(todo)} // Pasar el objeto todo completo
-                  className="p-1"
+                  className="p-1 sm:p-2"
                   title="Editar todo" // Tooltip para accesibilidad
                 >
-                  <Edit className="h-4 w-4" />
+                  <Edit className="h-3 w-3 sm:h-4 sm:w-4" />
+                  <span className="sr-only sm:not-sr-only sm:ml-1 text-xs">Editar</span>
                 </Button>
               )}
               
-              {/* 🗑️ BOTÓN DE ELIMINAR */}
+              {/* 🗑️ BOTÓN DE ELIMINAR - RESPONSIVO */}
               <Button
                 variant="ghost"
                 size="sm"
                 onClick={handleDelete}
                 loading={isDeleting} // Mostrar spinner durante eliminación
-                className="p-1 text-red-600 hover:text-red-700 hover:bg-red-50"
+                className="p-1 sm:p-2 text-red-600 hover:text-red-700 hover:bg-red-50"
                 title="Eliminar todo" // Tooltip para accesibilidad
               >
-                <Trash2 className="h-4 w-4" />
+                <Trash2 className="h-3 w-3 sm:h-4 sm:w-4" />
+                <span className="sr-only sm:not-sr-only sm:ml-1 text-xs">Eliminar</span>
               </Button>
             </div>
           </div>

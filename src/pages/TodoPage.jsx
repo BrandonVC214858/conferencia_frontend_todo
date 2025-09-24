@@ -125,25 +125,29 @@ const TodoPage = () => {
       {/* 🍞 NOTIFICACIONES TOAST */}
       <Toaster position="top-right" />
       
-      {/* 📋 HEADER PRINCIPAL */}
+      {/* 📋 HEADER PRINCIPAL - RESPONSIVO */}
       <div className="bg-white shadow">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center py-6">
+          <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center py-4 sm:py-6 space-y-4 sm:space-y-0">
+            {/* 🏷️ LOGO Y TÍTULO */}
             <div className="flex items-center">
-              <ListTodo className="h-8 w-8 text-blue-600 mr-3" />
+              <ListTodo className="h-6 w-6 sm:h-8 sm:w-8 text-blue-600 mr-2 sm:mr-3" />
               <div>
-                <h1 className="text-2xl font-bold text-gray-900">
+                <h1 className="text-xl sm:text-2xl font-bold text-gray-900">
                   Todo App
                 </h1>
-                <p className="text-sm text-gray-600 mt-1">
+                <p className="text-xs sm:text-sm text-gray-600 mt-1 hidden sm:block">
                   Organiza tus tareas de manera eficiente
                 </p>
               </div>
             </div>
             
-            <div className="flex items-center space-x-4">
+            {/* 🛠️ CONTROLES PRINCIPALES */}
+            <div className="flex items-center justify-between sm:justify-end space-x-2 sm:space-x-4">
               {/* ❤️ HEALTH CHECK DE LA API */}
-              <HealthCheck />
+              <div className="hidden sm:block">
+                <HealthCheck />
+              </div>
               
               {/* ➕ BOTÓN CREAR NUEVO TODO */}
               <Button 
@@ -151,43 +155,47 @@ const TodoPage = () => {
                   setShowForm(!showForm);
                   setEditingTodo(null);
                 }}
+                size="sm"
+                className="flex-shrink-0"
               >
-                <Plus className="h-4 w-4 mr-2" />
-                Nuevo Todo
+                <Plus className="h-4 w-4 sm:mr-2" />
+                <span className="hidden sm:inline">Nuevo Todo</span>
+                <span className="sm:hidden">Nuevo</span>
               </Button>
             </div>
           </div>
         </div>
       </div>
 
-      {/*  ESTADÍSTICAS RÁPIDAS */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
-          <Card>
+      {/* 📊 ESTADÍSTICAS RÁPIDAS - RESPONSIVO */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-6">
+        {/* 📈 TARJETAS DE ESTADÍSTICAS */}
+        <div className="grid grid-cols-3 sm:grid-cols-3 lg:grid-cols-3 gap-2 sm:gap-4 lg:gap-6 mb-4 sm:mb-6">
+          <Card className="p-3 sm:p-4">
             <div className="text-center">
-              <div className="text-2xl font-bold text-gray-900">{total}</div>
-              <div className="text-sm text-gray-600">Total</div>
+              <div className="text-lg sm:text-2xl font-bold text-gray-900">{total}</div>
+              <div className="text-xs sm:text-sm text-gray-600">Total</div>
             </div>
           </Card>
           
-          <Card>
+          <Card className="p-3 sm:p-4">
             <div className="text-center">
-              <div className="text-2xl font-bold text-orange-600">{pendingCount}</div>
-              <div className="text-sm text-gray-600">Pendientes</div>
+              <div className="text-lg sm:text-2xl font-bold text-orange-600">{pendingCount}</div>
+              <div className="text-xs sm:text-sm text-gray-600">Pendientes</div>
             </div>
           </Card>
           
-          <Card>
+          <Card className="p-3 sm:p-4">
             <div className="text-center">
-              <div className="text-2xl font-bold text-green-600">{completedCount}</div>
-              <div className="text-sm text-gray-600">Completados</div>
+              <div className="text-lg sm:text-2xl font-bold text-green-600">{completedCount}</div>
+              <div className="text-xs sm:text-sm text-gray-600">Completados</div>
             </div>
           </Card>
         </div>
 
-        {/* 📝 FORMULARIO DE CREACIÓN */}
+        {/* 📝 FORMULARIO DE CREACIÓN - RESPONSIVO */}
         {showForm && (
-          <div className="mb-6">
+          <div className="mb-4 sm:mb-6">
             <TodoForm
               onSubmit={handleCreateTodo}
               onCancel={() => setShowForm(false)}
@@ -196,9 +204,9 @@ const TodoPage = () => {
           </div>
         )}
 
-        {/* ✏️ FORMULARIO DE EDICIÓN */}
+        {/* ✏️ FORMULARIO DE EDICIÓN - RESPONSIVO */}
         {editingTodo && (
-          <div className="mb-6">
+          <div className="mb-4 sm:mb-6">
             <TodoForm
               todo={editingTodo}
               onSubmit={handleEditTodo}
@@ -208,8 +216,8 @@ const TodoPage = () => {
           </div>
         )}
 
-        {/* 🔍 FILTROS Y BÚSQUEDA */}
-        <div className="mb-6">
+        {/* 🔍 FILTROS Y BÚSQUEDA - RESPONSIVO */}
+        <div className="mb-4 sm:mb-6">
           <TodoFilters
             filters={filters}
             onFiltersChange={handleFiltersChange}

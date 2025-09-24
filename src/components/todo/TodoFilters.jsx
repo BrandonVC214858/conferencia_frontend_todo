@@ -64,29 +64,31 @@ const TodoFilters = ({ filters, onFiltersChange, onReset }) => {
     (filters.status && filters.status !== 'all');
 
   return (
-    <div className="bg-white border border-gray-200 rounded-lg p-4 shadow-sm">
-      {/* 🏷️ HEADER CON TÍTULO Y BOTÓN DE LIMPIAR */}
-      <div className="flex items-center space-x-2 mb-4">
-        <Filter className="h-5 w-5 text-gray-500" />
-        <h3 className="text-sm font-medium text-gray-900">Filtros</h3>
+    <div className="bg-white border border-gray-200 rounded-lg p-3 sm:p-4 shadow-sm">
+      {/* 🏷️ HEADER CON TÍTULO Y BOTÓN DE LIMPIAR - RESPONSIVO */}
+      <div className="flex items-center justify-between mb-3 sm:mb-4">
+        <div className="flex items-center space-x-2">
+          <Filter className="h-4 w-4 sm:h-5 sm:w-5 text-gray-500" />
+          <h3 className="text-sm font-medium text-gray-900">Filtros</h3>
+        </div>
         
-        {/* 🗑️ BOTÓN LIMPIAR FILTROS (solo si hay filtros activos) */}
+        {/* 🗑️ BOTÓN LIMPIAR FILTROS (solo si hay filtros activos) - RESPONSIVO */}
         {hasActiveFilters && (
           <Button 
             variant="ghost" 
             size="sm" 
             onClick={onReset}
-            className="text-xs"
+            className="text-xs p-1 sm:p-2"
           >
-            <RotateCcw className="h-3 w-3 mr-1" />
-            Limpiar
+            <RotateCcw className="h-3 w-3 sm:mr-1" />
+            <span className="hidden sm:inline">Limpiar</span>
           </Button>
         )}
       </div>
       
-      {/* 🎛️ CONTROLES DE FILTRADO */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        {/* 🔍 CAMPO DE BÚSQUEDA POR TEXTO */}
+      {/* 🎛️ CONTROLES DE FILTRADO - RESPONSIVO */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
+        {/* 🔍 CAMPO DE BÚSQUEDA POR TEXTO - RESPONSIVO */}
         <div className="relative">
           {/* 🔍 ÍCONO DE BÚSQUEDA DENTRO DEL INPUT */}
           <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -102,7 +104,7 @@ const TodoFilters = ({ filters, onFiltersChange, onReset }) => {
           />
         </div>
         
-        {/* 📊 SELECT PARA FILTRO POR ESTADO */}
+        {/* 📊 SELECT PARA FILTRO POR ESTADO - RESPONSIVO */}
         <Select
           options={statusOptions}
           value={filters.status || 'all'}

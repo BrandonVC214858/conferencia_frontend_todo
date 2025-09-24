@@ -126,21 +126,21 @@ const TodoForm = ({ todo, onSubmit, onCancel, loading = false }) => {
   };
 
   return (
-    <div className="bg-white border border-gray-200 rounded-lg p-6 shadow-sm">
-      {/* 📋 HEADER DEL FORMULARIO */}
+    <div className="bg-white border border-gray-200 rounded-lg p-4 sm:p-6 shadow-sm">
+      {/* 📋 HEADER DEL FORMULARIO - RESPONSIVO */}
       <div className="flex items-center justify-between mb-4">
-        <h3 className="text-lg font-semibold text-gray-900">
+        <h3 className="text-base sm:text-lg font-semibold text-gray-900">
           {isEditing ? 'Editar Todo' : 'Nuevo Todo'}
         </h3>
-        {/* ❌ BOTÓN DE CERRAR */}
-        <Button variant="ghost" size="sm" onClick={onCancel}>
+        {/* ❌ BOTÓN DE CERRAR - RESPONSIVO */}
+        <Button variant="ghost" size="sm" onClick={onCancel} className="p-1 sm:p-2">
           <X className="h-4 w-4" />
         </Button>
       </div>
       
-      {/* 📝 FORMULARIO */}
-      <form onSubmit={handleSubmit(handleFormSubmit)} className="space-y-4">
-        {/* 🏷️ CAMPO TÍTULO */}
+      {/* 📝 FORMULARIO - RESPONSIVO */}
+      <form onSubmit={handleSubmit(handleFormSubmit)} className="space-y-3 sm:space-y-4">
+        {/* 🏷️ CAMPO TÍTULO - RESPONSIVO */}
         <Input
           label="Título"
           placeholder="Ingresa el título del todo..."
@@ -148,7 +148,7 @@ const TodoForm = ({ todo, onSubmit, onCancel, loading = false }) => {
           {...register('title')} // Registrar campo con React Hook Form
         />
         
-        {/* 📄 CAMPO DESCRIPCIÓN */}
+        {/* 📄 CAMPO DESCRIPCIÓN - RESPONSIVO */}
         <Textarea
           label="Descripción (opcional)"
           placeholder="Agrega una descripción..."
@@ -157,26 +157,37 @@ const TodoForm = ({ todo, onSubmit, onCancel, loading = false }) => {
           {...register('description')}
         />
         
-        {/* 🎯 BOTONES DE ACCIÓN */}
-        <div className="flex justify-end space-x-3 pt-4">
-          {/* ❌ BOTÓN CANCELAR */}
-          <Button type="button" variant="secondary" onClick={onCancel}>
+        {/* 🎯 BOTONES DE ACCIÓN - RESPONSIVO */}
+        <div className="flex flex-col sm:flex-row justify-end space-y-2 sm:space-y-0 sm:space-x-3 pt-3 sm:pt-4">
+          {/* ❌ BOTÓN CANCELAR - RESPONSIVO */}
+          <Button 
+            type="button" 
+            variant="secondary" 
+            onClick={onCancel}
+            className="w-full sm:w-auto"
+          >
             Cancelar
           </Button>
           
-          {/* ✅ BOTÓN ENVIAR */}
-          <Button type="submit" loading={loading}>
+          {/* ✅ BOTÓN ENVIAR - RESPONSIVO */}
+          <Button 
+            type="submit" 
+            loading={loading}
+            className="w-full sm:w-auto"
+          >
             {isEditing ? (
               // ✏️ Texto para editar
               <>
                 <Edit className="h-4 w-4 mr-2" />
-                Actualizar Todo
+                <span className="hidden sm:inline">Actualizar Todo</span>
+                <span className="sm:hidden">Actualizar</span>
               </>
             ) : (
               // ➕ Texto para crear
               <>
                 <Plus className="h-4 w-4 mr-2" />
-                Crear Todo
+                <span className="hidden sm:inline">Crear Todo</span>
+                <span className="sm:hidden">Crear</span>
               </>
             )}
           </Button>
