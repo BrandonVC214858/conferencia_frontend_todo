@@ -3,7 +3,7 @@ import axios from 'axios';
 class ApiService {
   constructor() {
     this.api = axios.create({
-      baseURL: import.meta.env.VITE_API_URL || 'http://localhost:3000/api',
+      baseURL: import.meta.env.VITE_API_URL || 'http://localhost:8000',
       timeout: 10000,
       headers: {
         'Content-Type': 'application/json',
@@ -35,11 +35,51 @@ class ApiService {
         return response;
       },
       (error) => {
-        const apiError = {
-          message: error.response?.data?.message || error.message || 'Something went wrong',
-          status: error.response?.status || 500,
-          code: error.response?.data?.code,
+        let apiError = {
+          message: 'Error desconocido',
+          status: 500,
+          code: null,
         };
+
+        if (error.response) {
+          const { status, data } = error.response;
+          
+          // Handle FastAPI errors as per your example
+          if (status === 404) {
+            apiError.message = 'Todo no encontrado';
+            apiError.status = 404;
+          } else if (status === 422) {
+            // FastAPI validation errors
+            apiError.message = 'Datos inválidos';
+            apiError.status = 422;
+            apiError.code = 'VALIDATION_ERROR';
+            // Include validation details if available
+            if (data?.detail) {
+              apiError.details = data.detail;
+              if (Array.isArray(data.detail)) {
+                // Format validation errors for better display
+                apiError.message = data.detail.map(err => 
+                  `${err.loc?.join('.') || 'Campo'}: ${err.msg}`
+                ).join(', ');
+              } else if (typeof data.detail === 'string') {
+                apiError.message = data.detail;
+              }
+            }
+          } else if (status >= 500) {
+            apiError.message = 'Error del servidor';
+            apiError.status = status;
+          } else {
+            apiError.message = data?.message || error.message || 'Error en la petición';
+            apiError.status = status;
+          }
+        } else if (error.request) {
+          // Network error
+          apiError.message = 'Error de conexión. Verifica que el servidor esté ejecutándose en http://localhost:8000';
+          apiError.status = 0;
+          apiError.code = 'NETWORK_ERROR';
+        } else {
+          apiError.message = error.message || 'Error inesperado';
+        }
         
         return Promise.reject(apiError);
       }

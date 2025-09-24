@@ -8,14 +8,15 @@ import {
   TodoForm, 
   TodoList, 
   TodoFilters, 
-  Pagination 
+  Pagination,
+  HealthCheck 
 } from '../components';
 
 const TodoPage = () => {
   const [showForm, setShowForm] = useState(false);
+  const [editingTodo, setEditingTodo] = useState(null);
   const [filters, setFilters] = useState({
     status: 'all',
-    priority: 'all',
     search: '',
   });
 
@@ -26,6 +27,7 @@ const TodoPage = () => {
     totalPages,
     currentPage,
     createTodo,
+    updateTodo,
     toggleTodo,
     deleteTodo,
     setPage,
@@ -37,13 +39,27 @@ const TodoPage = () => {
     setShowForm(false);
   };
 
+  const handleEditTodo = async (id, todoData) => {
+    await updateTodo(id, todoData);
+    setEditingTodo(null);
+  };
+
+  const handleStartEdit = (todo) => {
+    setEditingTodo(todo);
+    setShowForm(false);
+  };
+
+  const handleCancelEdit = () => {
+    setEditingTodo(null);
+  };
+
   const handleFiltersChange = (newFilters) => {
     setFilters(newFilters);
     updateFilters(newFilters);
   };
 
   const handleResetFilters = () => {
-    const resetFilters = { status: 'all', priority: 'all', search: '' };
+    const resetFilters = { status: 'all', search: '' };
     setFilters(resetFilters);
     updateFilters(resetFilters);
   };
@@ -71,10 +87,18 @@ const TodoPage = () => {
               </div>
             </div>
             
-            <Button onClick={() => setShowForm(!showForm)}>
-              <Plus className="h-4 w-4 mr-2" />
-              Nuevo Todo
-            </Button>
+            <div className="flex items-center space-x-4">
+              <HealthCheck />
+              <Button 
+                onClick={() => {
+                  setShowForm(!showForm);
+                  setEditingTodo(null);
+                }}
+              >
+                <Plus className="h-4 w-4 mr-2" />
+                Nuevo Todo
+              </Button>
+            </div>
           </div>
         </div>
       </div>
@@ -115,6 +139,18 @@ const TodoPage = () => {
           </div>
         )}
 
+        {/* Edit Form */}
+        {editingTodo && (
+          <div className="mb-6">
+            <TodoForm
+              todo={editingTodo}
+              onSubmit={handleEditTodo}
+              onCancel={handleCancelEdit}
+              loading={loading}
+            />
+          </div>
+        )}
+
         {/* Filters */}
         <div className="mb-6">
           <TodoFilters
@@ -138,6 +174,7 @@ const TodoPage = () => {
               loading={loading}
               onToggle={toggleTodo}
               onDelete={deleteTodo}
+              onEdit={handleStartEdit}
             />
           </div>
           

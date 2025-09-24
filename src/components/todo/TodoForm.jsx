@@ -2,23 +2,17 @@ import React from 'react';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
-import { Plus, X } from 'lucide-react';
-import { Button, Input, Textarea, Select } from '../ui';
+import { Plus, X, Edit } from 'lucide-react';
+import { Button, Input, Textarea } from '../ui';
 
 const schema = yup.object({
-  title: yup.string().required('El título es obligatorio').min(1, 'El título no puede estar vacío'),
-  description: yup.string(),
-  priority: yup.string().oneOf(['low', 'medium', 'high']).required('La prioridad es obligatoria'),
-  dueDate: yup.string(),
+  title: yup.string().required('El título es obligatorio').min(1, 'El título no puede estar vacío').max(255, 'El título no puede exceder 255 caracteres'),
+  description: yup.string().max(1024, 'La descripción no puede exceder 1024 caracteres'),
 });
 
-const priorityOptions = [
-  { value: 'low', label: '🟢 Baja' },
-  { value: 'medium', label: '🟡 Media' },
-  { value: 'high', label: '🔴 Alta' },
-];
-
-const TodoForm = ({ onSubmit, onCancel, loading = false }) => {
+const TodoForm = ({ todo, onSubmit, onCancel, loading = false }) => {
+  const isEditing = !!todo;
+  
   const {
     register,
     handleSubmit,
@@ -27,24 +21,29 @@ const TodoForm = ({ onSubmit, onCancel, loading = false }) => {
   } = useForm({
     resolver: yupResolver(schema),
     defaultValues: {
-      title: '',
-      description: '',
-      priority: 'medium',
-      dueDate: '',
+      title: todo?.title || '',
+      description: todo?.description || '',
     },
   });
 
   const handleFormSubmit = async (data) => {
     try {
-      // Remove empty fields
+      // Format data for FastAPI (simple structure as per your example)
       const submitData = {
-        ...data,
-        dueDate: data.dueDate || undefined,
-        description: data.description || undefined,
+        title: data.title,
+        description: data.description || '',
+        ...(isEditing && { completed: todo.completed }),
       };
       
-      await onSubmit(submitData);
-      reset();
+      if (isEditing) {
+        await onSubmit(todo.id, submitData);
+      } else {
+        await onSubmit(submitData);
+      }
+      
+      if (!isEditing) {
+        reset();
+      }
       onCancel();
     } catch (error) {
       // Error is handled by the parent component
@@ -54,7 +53,9 @@ const TodoForm = ({ onSubmit, onCancel, loading = false }) => {
   return (
     <div className="bg-white border border-gray-200 rounded-lg p-6 shadow-sm">
       <div className="flex items-center justify-between mb-4">
-        <h3 className="text-lg font-semibold text-gray-900">Nuevo Todo</h3>
+        <h3 className="text-lg font-semibold text-gray-900">
+          {isEditing ? 'Editar Todo' : 'Nuevo Todo'}
+        </h3>
         <Button variant="ghost" size="sm" onClick={onCancel}>
           <X className="h-4 w-4" />
         </Button>
@@ -76,29 +77,22 @@ const TodoForm = ({ onSubmit, onCancel, loading = false }) => {
           {...register('description')}
         />
         
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <Select
-            label="Prioridad"
-            options={priorityOptions}
-            error={errors.priority?.message}
-            {...register('priority')}
-          />
-          
-          <Input
-            label="Fecha límite (opcional)"
-            type="datetime-local"
-            error={errors.dueDate?.message}
-            {...register('dueDate')}
-          />
-        </div>
-        
         <div className="flex justify-end space-x-3 pt-4">
           <Button type="button" variant="secondary" onClick={onCancel}>
             Cancelar
           </Button>
           <Button type="submit" loading={loading}>
-            <Plus className="h-4 w-4 mr-2" />
-            Crear Todo
+            {isEditing ? (
+              <>
+                <Edit className="h-4 w-4 mr-2" />
+                Actualizar Todo
+              </>
+            ) : (
+              <>
+                <Plus className="h-4 w-4 mr-2" />
+                Crear Todo
+              </>
+            )}
           </Button>
         </div>
       </form>

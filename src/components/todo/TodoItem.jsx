@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { Check, Clock, Trash2, Edit, Calendar } from 'lucide-react';
-import { formatRelativeDate, getDueDateClass, getPriorityColor } from '../../utils';
+import { Check, Clock, Trash2, Edit } from 'lucide-react';
+import { formatRelativeDate } from '../../utils';
 import { Button } from '../ui';
 
 const TodoItem = ({ todo, onToggle, onDelete, onEdit }) => {
@@ -69,28 +69,17 @@ const TodoItem = ({ todo, onToggle, onDelete, onEdit }) => {
               <div className="flex items-center space-x-4 mt-2">
                 <span className={`
                   inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium border
-                  ${getPriorityColor(todo.priority)}
+                  ${todo.completed ? 'bg-green-100 text-green-800 border-green-200' : 'bg-blue-100 text-blue-800 border-blue-200'}
                 `}>
-                  {todo.priority === 'high' && '🔴'}
-                  {todo.priority === 'medium' && '🟡'}
-                  {todo.priority === 'low' && '🟢'}
-                  {todo.priority.charAt(0).toUpperCase() + todo.priority.slice(1)}
+                  {todo.completed ? '✅ Completado' : '⏳ Pendiente'}
                 </span>
                 
-                {todo.dueDate && (
-                  <div className={`
-                    flex items-center text-xs
-                    ${getDueDateClass(todo.dueDate, todo.completed)}
-                  `}>
-                    <Calendar className="h-3 w-3 mr-1" />
-                    {formatRelativeDate(todo.dueDate)}
+                {todo.createdAt && (
+                  <div className="flex items-center text-xs text-gray-500">
+                    <Clock className="h-3 w-3 mr-1" />
+                    {formatRelativeDate(todo.createdAt)}
                   </div>
                 )}
-                
-                <div className="flex items-center text-xs text-gray-500">
-                  <Clock className="h-3 w-3 mr-1" />
-                  {formatRelativeDate(todo.createdAt)}
-                </div>
               </div>
             </div>
             

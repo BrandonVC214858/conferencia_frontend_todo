@@ -11,7 +11,6 @@ export const useTodos = (initialFilters = {}, pageSize = 10) => {
   const [currentPage, setCurrentPage] = useState(1);
   const [filters, setFilters] = useState({
     status: 'all',
-    priority: 'all',
     search: '',
     ...initialFilters
   });
@@ -20,21 +19,56 @@ export const useTodos = (initialFilters = {}, pageSize = 10) => {
     try {
       setLoading(true);
       setError(null);
-      
-      const params = {
-        page: currentPage,
-        limit: pageSize,
-        ...filters,
-      };
 
-      const response = await todoService.getTodos(params);
+      // Get todos from FastAPI (returns array directly)
+      const response = await todoService.getTodos();
+      let todosData = Array.isArray(response) ? response : [];
+
+      // Transform FastAPI data structure to frontend structure
+      const transformedTodos = todosData.map(todo => ({
+        id: todo.id,
+        title: todo.title,
+        description: todo.description || '',
+        completed: todo.completed || false,
+        // Default values for fields not in FastAPI basic structure
+        priority: 'medium',
+        dueDate: null,
+        createdAt: todo.created_at || new Date().toISOString(),
+        updatedAt: todo.updated_at || new Date().toISOString(),
+      }));
+
+      // Apply client-side filtering
+      let filteredTodos = transformedTodos;
       
-      setTodos(response.data || []);
-      setTotal(response.total || 0);
-      setTotalPages(response.totalPages || 1);
+      if (filters.status !== 'all') {
+        filteredTodos = filteredTodos.filter(todo => {
+          if (filters.status === 'completed') return todo.completed;
+          if (filters.status === 'pending') return !todo.completed;
+          return true;
+        });
+      }
+
+      if (filters.search) {
+        const searchTerm = filters.search.toLowerCase();
+        filteredTodos = filteredTodos.filter(todo =>
+          todo.title.toLowerCase().includes(searchTerm) ||
+          (todo.description && todo.description.toLowerCase().includes(searchTerm))
+        );
+      }
+
+      // Apply client-side pagination
+      const start = (currentPage - 1) * pageSize;
+      const end = start + pageSize;
+      const paginatedTodos = filteredTodos.slice(start, end);
+      const calculatedTotalPages = Math.ceil(filteredTodos.length / pageSize);
+      
+      setTodos(paginatedTodos);
+      setTotal(filteredTodos.length);
+      setTotalPages(calculatedTotalPages);
     } catch (err) {
       setError(err.message || 'Error al cargar los todos');
       toast.error('Error al cargar los todos');
+      console.error('Error fetching todos:', err);
     } finally {
       setLoading(false);
     }
