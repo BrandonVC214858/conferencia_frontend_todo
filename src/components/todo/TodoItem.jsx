@@ -23,7 +23,7 @@
 
 import React, { useState } from 'react';
 import { Check, Clock, Trash2, Edit } from 'lucide-react';
-import { formatRelativeDate } from '../../utils';
+import { formatRelativeDateFromAPI } from '../../utils';
 import { Button } from '../ui';
 
 /**
@@ -134,7 +134,9 @@ const TodoItem = ({ todo, onToggle, onDelete, onEdit }) => {
                 {todo.createdAt && (
                   <div className="flex items-center text-xs text-gray-500">
                     <Clock className="h-3 w-3 mr-1 flex-shrink-0" />
-                    <span className="truncate">{formatRelativeDate(todo.createdAt)}</span>
+                    <span className="truncate">
+                      {formatRelativeDateFromAPI(todo.createdAt)}
+                    </span>
                   </div>
                 )}
               </div>
