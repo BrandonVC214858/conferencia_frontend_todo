@@ -58,6 +58,9 @@ export const formatDateTime = (date) => {
  * Convierte una fecha a formato relativo en español (hace X tiempo, en X tiempo)
  * Útil para mostrar cuándo se creó un todo o cuándo vence
  * 
+ * IMPORTANTE: FastAPI envía fechas en UTC, pero parseISO las interpreta como hora local.
+ * Esta función maneja correctamente las diferencias de zona horaria.
+ * 
  * @param {Date|string} date - Fecha a comparar con ahora
  * @returns {string} - Fecha relativa como "hace 2 horas", "en 3 días" o string vacío
  * 
@@ -67,11 +70,83 @@ export const formatDateTime = (date) => {
  */
 export const formatRelativeDate = (date) => {
   if (!date) return '';
-  const dateObj = typeof date === 'string' ? parseISO(date) : date;
-  return formatDistance(dateObj, new Date(), { 
-    addSuffix: true, // Agregar "hace" o "en"
-    locale: es       // Usar locale español
-  });
+  
+  try {
+    let dateObj;
+    
+    if (typeof date === 'string') {
+      // Si la fecha es un string, puede venir en diferentes formatos desde FastAPI
+      if (date.includes('T') && (date.includes('Z') || date.includes('+'))) {
+        // Formato ISO con timezone (ej: "2025-09-24T10:00:00Z")
+        dateObj = parseISO(date);
+      } else if (date.includes('T')) {
+        // Formato ISO sin timezone - asumir que es UTC desde FastAPI
+        dateObj = parseISO(date + 'Z');
+      } else {
+        // Otros formatos, intentar parsear directamente
+        dateObj = new Date(date);
+      }
+    } else {
+      dateObj = date;
+    }
+    
+    // Validar que la fecha sea válida
+    if (isNaN(dateObj.getTime())) {
+      console.warn('⚠️ Fecha inválida recibida:', date);
+      return '';
+    }
+    
+    return formatDistance(dateObj, new Date(), { 
+      addSuffix: true, // Agregar "hace" o "en"
+      locale: es       // Usar locale español
+    });
+  } catch (error) {
+    console.error('❌ Error formateando fecha relativa:', error, 'Fecha:', date);
+    return '';
+  }
+};
+
+/**
+ * 🚀 FORMATEAR FECHA RELATIVA DESDE FASTAPI
+ * 
+ * Función específica para manejar fechas que vienen desde FastAPI.
+ * FastAPI envía fechas en UTC sin el sufijo 'Z', esta función las maneja correctamente.
+ * 
+ * @param {string|Date} date - Fecha desde FastAPI en formato UTC
+ * @returns {string} - Fecha relativa en español
+ */
+export const formatRelativeDateFromAPI = (date) => {
+  if (!date) return '';
+  
+  try {
+    let dateObj;
+    
+    if (typeof date === 'string') {
+      // FastAPI envía fechas como "2025-09-24T19:56:15.784244" 
+      // Estas fechas están en UTC pero sin el sufijo 'Z'
+      // Agregamos 'Z' para que JavaScript las interprete correctamente como UTC
+      const utcDateString = date.endsWith('Z') ? date : date + 'Z';
+      dateObj = new Date(utcDateString);
+    } else {
+      dateObj = date;
+    }
+    
+    // Verificar que la fecha sea válida
+    if (isNaN(dateObj.getTime())) {
+      console.warn('⚠️ Fecha inválida:', date);
+      return '';
+    }
+    
+    // Usar formatDistance de date-fns para el formato relativo
+    return formatDistance(dateObj, new Date(), { 
+      addSuffix: true,
+      locale: es 
+    });
+    
+  } catch (error) {
+    console.error('❌ Error formateando fecha desde API:', error);
+    return '';
+  }
 };
 
 /**
